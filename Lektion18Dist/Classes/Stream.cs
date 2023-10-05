@@ -4,7 +4,7 @@ using System;
 
 namespace Lektion18Dist.Classes;
 
-public class Stream : IMovie
+public class Stream : IMovie, IPlayer
 {
     public int Id { get; init; }
     public string Title { get; }

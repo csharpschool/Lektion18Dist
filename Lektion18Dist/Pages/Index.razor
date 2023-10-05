@@ -67,6 +67,8 @@
             message = film.Play();
             if(film is Stream)
                 ((Stream)film).Stop();
+
+            // ((DVD)film).Stop(); // Error pga att DVD klassen inte impl. IPlayer interfacet.
         }
         catch
         {

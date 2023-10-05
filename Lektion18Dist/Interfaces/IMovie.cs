@@ -2,13 +2,17 @@
 
 namespace Lektion18Dist.Interfaces
 {
-    public interface IMovie
+    public interface IMovie// : IPlayer
     {
-            public int Id { get; init; }
-            public string Title { get; }
-            public Genres Genre { get; set; }
-            public int Year { get; set; }
+        public int Id { get; init; }
+        public string Title { get; }
+        public Genres Genre { get; set; }
+        public int Year { get; set; }
+        string Play();
+    }
 
-            string Play();
+    public interface IPlayer
+    {
+        public void Stop();
     }
 }

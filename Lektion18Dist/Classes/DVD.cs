@@ -3,7 +3,7 @@ using Lektion18Dist.Interfaces;
 
 namespace Lektion18Dist.Classes;
 
-public class DVD : IMovie
+public class DVD : IMovie//, IPlayer
 {
     public int Id { get; init; }
     public string Title { get; }

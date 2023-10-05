@@ -1,0 +1,89 @@
+﻿@page "/"
+@using Lektion18Dist.Classes;
+@using Lektion18Dist.Enums;
+@using Lektion18Dist.Interfaces;
+
+<PageTitle>Index</PageTitle>
+
+<h1>Film</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Genre</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in movies)
+        {
+            <tr>
+                <td>@movie.Title</td>
+                <td>@movie.Year</td>
+                <td>@movie.Genre</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="@(() => Play(movie.Id))">Play</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button class="btn btn-primary" @onclick="@(() => Play(45))">Play Error</button>
+
+
+@if(error.Length > 0)
+{
+    <div>@error</div>
+}
+
+@if (message.Length > 0)
+{
+    <div>@message</div>
+}
+
+@code{
+    List<IMovie> movies = new();
+    string error = string.Empty, message = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        movies.Add(new DVD(1, "Groundhog Day", Genres.Comedy, 1993));
+        movies.Add(new Stream(1001, "Groundhog Day", Genres.Comedy, 1993));
+        movies.Add(new DVD(2, "Stardust", Genres.Fantasy, 2010));
+    }
+
+    void Play(int id)
+    {
+        try
+        {
+            //var slask = new Slask();
+            //slask.TestaFel();
+
+            error = string.Empty;
+            var film = movies.Single(f => f.Id == id);
+            message = film.Play();
+            if(film is Stream)
+                ((Stream)film).Stop();
+        }
+        catch
+        {
+            error = "Could not play film.";
+        }
+    }
+
+    void Test()
+    {
+        var film = new Film(1) { Genre = Genres.None, Year = 2323 };
+
+        film.Year = 2020;
+        //film.Month = 12; // Ej tillg. pga privat property i klassen
+        film.Genre = Genres.Romance;
+        film.AddTitle("Slask");
+        film.Update("New Title", Genres.Animated, 2222, 12);
+        var currentMonth = film.GetMonth();
+    }
+}
+

@@ -13,7 +13,7 @@ public class Backpack
         get
         {
             var occupied = Items.Sum(x => x.Size);
-            return MaxSize - occupied;
+            return (int)(MaxSize - occupied);
         }
     }
 

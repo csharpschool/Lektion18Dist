@@ -2,8 +2,11 @@
 {
     public interface IItem
     {
+        int Id { get; init; }
+        Uri Image { get; init; }
         string Name { get; init; }
-        public int Size { get; init; }
-        public int NoOfHands { get; set; }
+        double Size { get; init; }
+        int NoOfHands { get; set; }
+        double Durability { get; set; }
     }
 }

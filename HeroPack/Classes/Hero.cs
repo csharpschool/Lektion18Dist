@@ -4,16 +4,21 @@ using System.Net;
 
 namespace HeroPack.Classes;
 
-public class Hero
+public class Hero : ICharacter
 {
     public string Name { get; init; }
     public List<Hand> Hands { get; } = new();
+    public double Strength { get; set; }
+    public double Stamina { get; set; }
+
 
     //private bool AllHandsAreFree => Hands.Sum(h => h.Item?.Size) == 0;
 
-    public Hero(int numberOfHands)
+    public Hero(int numberOfHands, double strength, double stamina)
     {
         Hands = new(numberOfHands);
+        Strength = strength;
+        Stamina = stamina;
     }
 
     /*private void AddToHand(Hand hand, IItem item) =>
@@ -25,44 +30,37 @@ public class Hero
             hand.Item = item;
     }
 
-    private List<Hand> GetFreeHands(int count)
+    private List<Hand>? GetFreeHands(int count)
     {
         var freeHands = 
             Hands.Where(h => h.Item is null).Take(count).ToList();
 
         if (freeHands.Count < count)
-            throw new HandException("Too few available hands.");
+            return null;
+        
+        /*if (freeHands.Count < count)
+            throw new HandException("Too few available hands.");*/
 
         return freeHands;
     }
 
-    public void PickUp(IItem item)
+    public bool PickUp(IItem item)
     {
-        //var totalHandSize = Hands.Sum(h => h.MaxSize);
-        //var totalItemSize = Hands.Sum(h => h.Item?.Size);
-        //var freeHandSpace = Hands.Sum(h => h.MaxSize - h.Item?.Size);
-
         try
         {
             var freeHands = GetFreeHands(item.NoOfHands);
+            if(freeHands is null) return false;
+
             AddToHands(freeHands, item);
+            return true;
         }
-        catch(HandException)
+        /*catch(HandException)
         {
             // Vad ska vi göra om det finns för få händer?
-        }
+        }*/
         catch
         {
-            throw;
+            return false;
         }
-
-        //var freeHand = Hands.Sum(h => h.MaxSize - h.Item?.Size);
-
-        //if (item.Size > freeHandSpace)
-            //throw new ItemException("Item too large to pick up.", item);
-        
-        // Gör något
-        
-
     }
 }

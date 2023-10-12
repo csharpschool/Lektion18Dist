@@ -7,7 +7,9 @@ namespace HeroPack.Classes;
 public class Backpack
 {
     public List<IItem> Items { get; } = new();
-    public int MaxSize { get; init; }
+    public int MaxSize { get; private set; }
+
+    public Backpack(int maxSize) => MaxSize = maxSize;    
 
     public int FreeSpace { 
         get
@@ -15,6 +17,11 @@ public class Backpack
             var occupied = Items.Sum(x => x.Size);
             return (int)(MaxSize - occupied);
         }
+    }
+
+    public void Sort(IComparer<IItem> comparer)
+    {
+        Items.Sort(comparer);
     }
 
     public void Remove(IItem item) => Items.Remove(item);

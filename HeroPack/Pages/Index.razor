@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using HeroPack.Classes.Weapons;
 @using HeroPack.Classes;
+@using HeroPack.Comparers;
 @using HeroPack.Interfaces;
 
 <PageTitle>Index</PageTitle>
@@ -8,14 +9,24 @@
 <h1>Game</h1>
 
 @code{
+    //TODO: Koppla ryggsäcken till hjälten
+    //TODO: Lägg/ta bort innehåll i ryggsäcken
+    //TODO: Sortera ryggsäckens innehåll
+    //TODO: Visa ryggsäckens innehåll på sidan
+
     Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 45, 1, 0.65, 0.75);
     Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 100, 1, 1, 1);
     ICharacter hero = new Hero(2, 45, 35);
+    Backpack pack = new(36);
 
     protected override void OnInitialized()
     {
         var rockDmg = rock.CalculateDamage(hero);
         var swordDmg = sword.CalculateDamage(hero);
+        //IItem item = new Item(1, new Uri("https://getbootstrap.com/"), "The Rock", 45, 1, 0.65);
+        //pack.Items // items är huller om buller
+        pack.Sort(new AlphaSorter());
+        //pack.Items // items är sorterade
     }
 }
 

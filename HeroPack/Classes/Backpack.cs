@@ -4,9 +4,8 @@ using System.Data;
 
 namespace HeroPack.Classes;
 
-public class Backpack
+public class Backpack<T> : List<T> where T : class, IItem
 {
-    public List<IItem> Items { get; } = new();
     public int MaxSize { get; private set; }
 
     public Backpack(int maxSize) => MaxSize = maxSize;    
@@ -14,22 +13,22 @@ public class Backpack
     public int FreeSpace { 
         get
         {
-            var occupied = Items.Sum(x => x.Size);
+            var occupied = this.Sum(x => x.Size);
             return (int)(MaxSize - occupied);
         }
     }
 
-    public void Sort(IComparer<IItem> comparer)
+    public new void Sort(IComparer<T> comparer)
     {
-        Items.Sort(comparer);
+        base.Sort(comparer);
     }
 
-    public void Remove(IItem item) => Items.Remove(item);
+    public new void Remove(T item) => base.Remove(item);
 
-    public void Add(IItem item)
+    public new void Add(T item)
     {
         if (item.Size <= FreeSpace)
-            Items.Add(item);
+            base.Add(item);
         else 
             throw new ItemException("För lite plats i rygsäcken", item);
     }

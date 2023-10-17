@@ -2,27 +2,71 @@
 @using HeroPack.Classes.Weapons;
 @using HeroPack.Classes;
 @using HeroPack.Comparers;
+@using HeroPack.Exceptions;
 @using HeroPack.Interfaces;
 
 <PageTitle>Index</PageTitle>
 
 <h1>Game</h1>
+<h3>Backpack </h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Hands</th>
+            <th>Durability</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in pack)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Size</td>
+                <td>@item.NoOfHands</td>
+                <td>@item.Durability</td>
+            </tr>
+        }
+    </tbody>
+</table>
+@if(message.Length > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @message
+    </div>
+}
+
 
 @code{
     //TODO: Koppla ryggsäcken till hjälten
-    //TODO: Lägg/ta bort innehåll i ryggsäcken
-    //TODO: Sortera ryggsäckens innehåll
-    //TODO: Visa ryggsäckens innehåll på sidan
 
-    Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 45, 1, 0.65, 0.75);
-    Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 100, 1, 1, 1);
+    Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
+    Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 300, 1, 1, 1);
     ICharacter hero = new Hero(2, 45, 35);
-    Backpack pack = new(36);
+    Backpack<IItem> pack = new(36);
+    string message = string.Empty;
 
     protected override void OnInitialized()
     {
+        message = string.Empty;
         var rockDmg = rock.CalculateDamage(hero);
         var swordDmg = sword.CalculateDamage(hero);
+
+        try
+        {
+            pack.Add(rock);
+            pack.Add(sword);
+        }
+        catch (ItemException ex)
+        {
+            message = $"{ex.Message} för {ex.Item?.Name}";
+        }
+        catch
+        {
+            message = "Too small backpack.";
+        }
         //IItem item = new Item(1, new Uri("https://getbootstrap.com/"), "The Rock", 45, 1, 0.65);
         //pack.Items // items är huller om buller
         pack.Sort(new AlphaSorter());

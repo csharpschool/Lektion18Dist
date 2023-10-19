@@ -13,7 +13,7 @@ public class Weapon : Item, IDamage
         BaseDamage = baseDamage;
     }
 
-    public virtual double CalculateDamage(ICharacter character)
+    public virtual double CalculateDamage(Character character)
     {
         return BaseDamage;
     }

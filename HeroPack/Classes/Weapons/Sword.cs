@@ -10,7 +10,7 @@ public class Sword : Weapon
     {
     }
 
-    public override double CalculateDamage(ICharacter character)
+    public override double CalculateDamage(Character character)
     {
         return character.Strength * BaseDamage * Durability;
     }

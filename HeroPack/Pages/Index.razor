@@ -43,8 +43,8 @@
     //TODO: Koppla ryggsäcken till hjälten
 
     Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
-    Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 300, 1, 1, 1);
-    ICharacter hero = new Hero(2, 45, 35);
+    Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1);
+    Character hero = new Hero(2, 45, 35);
     Backpack<IItem> pack = new(36);
     string message = string.Empty;
 
@@ -56,8 +56,14 @@
 
         try
         {
-            pack.Add(rock);
-            pack.Add(sword);
+            // Add to hands
+            hero.PickUp(rock);
+            hero.PickUp(sword);
+            var bestWeapon = hero.FindBestWeapon();
+
+            // Add to Backpack
+            //pack.Add(rock);
+            //pack.Add(sword);
         }
         catch (ItemException ex)
         {

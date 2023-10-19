@@ -1,8 +1,10 @@
-﻿namespace HeroPack.Interfaces;
+﻿using HeroPack.Classes;
+
+namespace HeroPack.Interfaces;
 
 public interface IDamage
 {
     double BaseDamage { get; }
 
-    double CalculateDamage(ICharacter character);
+    double CalculateDamage(Character character);
 }

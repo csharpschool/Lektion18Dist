@@ -1,15 +1,18 @@
 ﻿using HeroPack.Classes.Weapons;
+using HeroPack.Exceptions;
 using HeroPack.Interfaces;
 using System.Reflection.Metadata;
 
 namespace HeroPack.Classes;
 
-public abstract class Character// : ICharacter
+public abstract class Character : ICharacter
 {
     public double Strength { get; init; }
     public double Stamina { get; init; }
     protected List<Hand> Hands { get; init; } = new();
+    protected Backpack<IItem>? Backpack { get; private set; }
 
+    protected void CreateBackpack(int size) => Backpack = new(size);
     private void AddToHands(List<Hand> hands, IItem item)
     {
         foreach (var hand in hands)
@@ -30,14 +33,16 @@ public abstract class Character// : ICharacter
         return freeHands;
     }
 
-    public bool PickUp(IItem item)
+    public bool PickUp(Backpack<IItem> loot, IItem item)
     {
         try
         {
+            ///TODO: Se till att man kan plocka upp så många rubiner som får plats i händerna och lämna resten i loot listan
             var freeHands = GetFreeHands(item.NoOfHands);
             if (freeHands is null) return false;
 
             AddToHands(freeHands, item);
+            loot.Remove(item);
             return true;
         }
         /*catch(HandException)
@@ -63,4 +68,32 @@ public abstract class Character// : ICharacter
 
         return bestWeapon;
     }
+
+    public Backpack<IItem>? OpenBackpack() => Backpack;
+    public List<Hand> GetItemsInHands() => Hands;
+
+    public void AddToBackpack(Backpack<IItem> loot, IItem item)
+    {
+        try
+        {
+            Backpack?.Add(item);
+            loot.Remove(item);
+        }
+        catch (ItemException)
+        {
+            throw;
+        }
+        catch
+        {
+            throw new ItemException("Could not add to backpack.");
+        }
+    }
+
+    public Backpack<IItem>? Loot()
+    {
+        var backpack = Backpack;
+        Backpack = null;
+        return backpack;
+    }
+    
 }

@@ -1,15 +1,11 @@
 ﻿@page "/"
-@using HeroPack.Classes.Weapons;
-@using HeroPack.Classes;
-@using HeroPack.Comparers;
-@using HeroPack.Exceptions;
-@using HeroPack.Interfaces;
+@using HeroPack.Services;
+@inject Game game
 
 <PageTitle>Index</PageTitle>
 
 <h1>Game</h1>
 <h3>Backpack </h3>
-
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +16,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in pack)
+        @foreach (var item in game.HerosBackpack)
         {
             <tr>
                 <td>@item.Name</td>
@@ -31,52 +27,70 @@
         }
     </tbody>
 </table>
-@if(message.Length > 0)
+
+<h3>Holding in hands</h3>
+@* Vad håller hjälten i händerna *@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Hands</th>
+            <th>Durability</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hand in game.Hero.GetItemsInHands())
+        {
+            <tr>
+                <td>@hand?.Item?.Name</td>
+                <td>@hand?.Item?.Size</td>
+                <td>@hand?.Item?.NoOfHands</td>
+                <td>@hand?.Item?.Durability</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (game.Loot is not null && game.Loot.Count > 0)
+{
+    <h3>Loot on the ground</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Hands</th>
+                <th>Durability</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in game.Loot)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Size</td>
+                    <td>@item.NoOfHands</td>
+                    <td>@item.Durability</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => game.Hero.PickUp(game.Loot, item)">Pick Up</button>
+                        <button class="btn btn-primary" 
+                            @onclick="() => game.Hero.AddToBackpack(game.Loot, item)">Add to backpack</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@* Error message *@
+@if(game.Message.Length > 0)
 {
     <div class="alert alert-danger" role="alert">
-        @message
+        @game.Message
     </div>
 }
 
 
-@code{
-    //TODO: Koppla ryggsäcken till hjälten
-
-    Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
-    Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1);
-    Character hero = new Hero(2, 45, 35);
-    Backpack<IItem> pack = new(36);
-    string message = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        message = string.Empty;
-        var rockDmg = rock.CalculateDamage(hero);
-        var swordDmg = sword.CalculateDamage(hero);
-
-        try
-        {
-            // Add to hands
-            hero.PickUp(rock);
-            hero.PickUp(sword);
-            var bestWeapon = hero.FindBestWeapon();
-
-            // Add to Backpack
-            //pack.Add(rock);
-            //pack.Add(sword);
-        }
-        catch (ItemException ex)
-        {
-            message = $"{ex.Message} för {ex.Item?.Name}";
-        }
-        catch
-        {
-            message = "Too small backpack.";
-        }
-        //IItem item = new Item(1, new Uri("https://getbootstrap.com/"), "The Rock", 45, 1, 0.65);
-        //pack.Items // items är huller om buller
-        pack.Sort(new AlphaSorter());
-        //pack.Items // items är sorterade
-    }
-}
 

@@ -26,7 +26,7 @@ public class Game
             Monster.AddToBackpack(new Backpack<IItem>(0), new Ruby(
                 101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100));
             Monster.AddToBackpack(new Backpack<IItem>(0), new Coin(
-                102, new Uri("https://getbootstrap.com/"), "Gold Coin", 7, 100));
+                102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100));
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);

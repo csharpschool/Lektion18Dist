@@ -7,7 +7,7 @@ namespace HeroPack.Classes.Valuables
         public int Quantity { get; set; }
 
         public Valuable(int id, Uri image, string name, double size, int quantity, double durability)
-            : base(id, image, name, size, (int)(quantity * size), durability)
+            : base(id, image, name, size, (int)Math.Ceiling(quantity * size), durability)
         {
             Quantity = quantity;
         }

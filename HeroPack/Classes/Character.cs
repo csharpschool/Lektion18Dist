@@ -1,4 +1,5 @@
-﻿using HeroPack.Classes.Weapons;
+﻿using HeroPack.Classes.Valuables;
+using HeroPack.Classes.Weapons;
 using HeroPack.Exceptions;
 using HeroPack.Interfaces;
 using System.Reflection.Metadata;
@@ -19,12 +20,17 @@ public abstract class Character : ICharacter
             hand.Item = item;
     }
 
-    private List<Hand>? GetFreeHands(int count)
+    private List<Hand>? GetFreeHands(IItem item)
     {
         var freeHands =
-            Hands.Where(h => h.Item is null).Take(count).ToList();
+            Hands.Where(h => h.Item is null).ToList();
 
-        if (freeHands.Count < count)
+        if(item is Valuable)
+            return freeHands;
+
+        freeHands = freeHands.Take(item.NoOfHands).ToList();
+
+        if (freeHands.Count < item.NoOfHands)
             return null;
 
         /*if (freeHands.Count < count)
@@ -37,12 +43,21 @@ public abstract class Character : ICharacter
     {
         try
         {
-            ///TODO: Se till att man kan plocka upp så många rubiner som får plats i händerna och lämna resten i loot listan
-            var freeHands = GetFreeHands(item.NoOfHands);
+            ///TODO: Se till att man kan plocka upp så många rubiner 
+            ///som får plats i händerna och lämna resten i loot listan
+            var freeHands = GetFreeHands(item);
             if (freeHands is null) return false;
+
+            IItem? lootItem = null;
+
+            if (item is Valuable)
+                lootItem = DivideValuable(freeHands.Count, item);
 
             AddToHands(freeHands, item);
             loot.Remove(item);
+            if(lootItem is not null) 
+                loot.Add(lootItem);
+
             return true;
         }
         /*catch(HandException)
@@ -53,6 +68,21 @@ public abstract class Character : ICharacter
         {
             return false;
         }
+    }
+
+    private IItem? DivideValuable(int noFreeHands, IItem item)
+    {
+        if(noFreeHands >= item.NoOfHands) return null;
+        
+        var possibleToPickUp = (int)(noFreeHands / item.Size);
+        var remaining = ((Valuable)item).Quantity - possibleToPickUp;
+
+        ((Valuable)item).Quantity = possibleToPickUp;
+
+        var id = Backpack is null || Backpack.Count == 0 ? 1 : Backpack.Max(b => b.Id);
+        return new Valuable(
+            id, new Uri("https://getbootstrap.com/"), item.Name,
+            item.Size, remaining, item.Durability);
     }
 
     public Weapon? FindBestWeapon()

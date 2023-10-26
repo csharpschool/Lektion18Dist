@@ -8,10 +8,12 @@ namespace HeroPack.Classes;
 
 public abstract class Character : ICharacter
 {
-    public double Strength { get; init; }
-    public double Stamina { get; init; }
+    public double Strength { get; set; }
+    public double Stamina { get; set; }
+    public double Health { get; set; }
     protected List<Hand> Hands { get; init; } = new();
     protected Backpack<IItem>? Backpack { get; private set; }
+
 
     protected void CreateBackpack(int size) => Backpack = new(size);
     private void AddToHands(List<Hand> hands, IItem item)
@@ -27,7 +29,6 @@ public abstract class Character : ICharacter
         for (int i = 0; i < handItems.Count; i++)
             hands[i].Item = handItems[i];
     }
-
 
     private List<Hand>? GetFreeHands(IItem item)
     {
@@ -52,8 +53,6 @@ public abstract class Character : ICharacter
     {
         try
         {
-            ///TODO: Se till att man kan plocka upp så många rubiner 
-            ///som får plats i händerna och lämna resten i loot listan
             var freeHands = GetFreeHands(item);
             if (freeHands is null) return false;
 
@@ -75,10 +74,6 @@ public abstract class Character : ICharacter
 
             return true;
         }
-        /*catch(HandException)
-        {
-            // Vad ska vi göra om det finns för få händer?
-        }*/
         catch
         {
             return false;
@@ -88,12 +83,8 @@ public abstract class Character : ICharacter
     private (List<IItem> HandItems, IItem? RemainingItem) 
         DivideValuable(int noFreeHands, IItem item)
     {
-        //if(noFreeHands >= item.NoOfHands) return null;
-        
         var possibleToPickUp = (int)(noFreeHands / item.Size);
         var remaining = item.Quantity - possibleToPickUp;
-
-        //item.Quantity = possibleToPickUp;
         var handItems = new List<IItem>();
         var id = Backpack is null || Backpack.Count == 0 ? 1 : Backpack.Max(b => b.Id) + 1;
         var qty = possibleToPickUp / noFreeHands;
@@ -155,5 +146,27 @@ public abstract class Character : ICharacter
         Backpack = null;
         return backpack;
     }
-    
+
+    public (double AttackerHealth, double AdversaryHealth, string Error)
+        Attack(List<Character> adversaries)
+    {
+        try
+        {
+            var adversaryMinHealth = adversaries.Min(m => m.Health);
+            var adversary = adversaries.First(m => m.Health == adversaryMinHealth);
+            var bestWeapon = FindBestWeapon();
+
+            var damage = bestWeapon is null 
+                ? new Random().NextDouble() * 10 // Slåss utan vapen
+                : bestWeapon.CalculateDamage(this);
+
+            adversary.Health -= damage;
+
+            return (Health, adversary.Health, string.Empty);
+        }
+        catch
+        {
+            return(Health, 0, "No adversary to fight.");
+        }
+    }
 }

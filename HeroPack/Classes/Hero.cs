@@ -10,7 +10,7 @@ public class Hero : Character
 {
     public string Name { get; init; }
 
-    public Hero(string name, int numberOfHands, double strength, double stamina)
+    public Hero(string name, int numberOfHands, double strength, double stamina, double health)
     {
         Name = name;
         Hands = new(numberOfHands);
@@ -19,5 +19,6 @@ public class Hero : Character
             Hands.Add(new Hand(4));
         Strength = strength;
         Stamina = stamina;
+        Health = health;
     }
 }

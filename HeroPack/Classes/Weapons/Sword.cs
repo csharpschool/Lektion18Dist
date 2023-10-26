@@ -12,6 +12,7 @@ public class Sword : Weapon
 
     public override double CalculateDamage(Character character)
     {
-        return character.Strength * BaseDamage * Durability;
+        var baseDamage = base.CalculateDamage(character);
+        return character.Strength * baseDamage * Durability;
     }
 }

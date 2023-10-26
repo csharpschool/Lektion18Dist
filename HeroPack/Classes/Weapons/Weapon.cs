@@ -15,7 +15,9 @@ public class Weapon : Item, IDamage
 
     public virtual double CalculateDamage(Character character)
     {
-        return BaseDamage;
+        var random = new Random();
+        var damageRange = (random.NextDouble() / 4) + 0.85;
+        return BaseDamage * damageRange;
     }
 
 }

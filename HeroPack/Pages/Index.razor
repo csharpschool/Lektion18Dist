@@ -4,6 +4,15 @@
 
 <PageTitle>Index</PageTitle>
 
+<button class="btn btn-warning"
+@onclick="() => 
+    { 
+        game.AttackValues = game.Hero.Attack(game.Monsters); 
+        game.Message = game.AttackValues.Error;
+    }">
+    Attack
+</button>
+
 <h1>Game</h1>
 <h3>Backpack </h3>
 <table class="table">
@@ -95,6 +104,5 @@
         @game.Message
     </div>
 }
-
 
 

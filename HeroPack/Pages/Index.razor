@@ -37,6 +37,7 @@
             <th>Size</th>
             <th>Hands</th>
             <th>Durability</th>
+            <th>Quantity</th>
         </tr>
     </thead>
     <tbody>
@@ -47,6 +48,7 @@
                 <td>@hand?.Item?.Size</td>
                 <td>@hand?.Item?.NoOfHands</td>
                 <td>@hand?.Item?.Durability</td>
+                <td>@hand?.Item?.Quantity</td>
             </tr>
         }
     </tbody>
@@ -62,6 +64,7 @@
                 <th>Size</th>
                 <th>Hands</th>
                 <th>Durability</th>
+                <th>Quantity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -73,6 +76,7 @@
                     <td>@item.Size</td>
                     <td>@item.NoOfHands</td>
                     <td>@item.Durability</td>
+                    <td>@item.Quantity</td>
                     <td>
                         <button class="btn btn-primary" @onclick="() => game.Hero.PickUp(game.Loot, item)">Pick Up</button>
                         <button class="btn btn-primary" 

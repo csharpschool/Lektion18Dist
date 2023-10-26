@@ -2,5 +2,4 @@
 
 public interface IValuable
 {
-    int Quantity { get; set; }
 }

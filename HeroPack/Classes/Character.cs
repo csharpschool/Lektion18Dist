@@ -19,6 +19,15 @@ public abstract class Character : ICharacter
         foreach (var hand in hands)
             hand.Item = item;
     }
+    private void AddToHands(List<Hand> hands, List<IItem> handItems)
+    {
+        if(hands.Count < handItems.Count)
+            new HandException("Wrong number of hands.");
+
+        for (int i = 0; i < handItems.Count; i++)
+            hands[i].Item = handItems[i];
+    }
+
 
     private List<Hand>? GetFreeHands(IItem item)
     {
@@ -48,15 +57,21 @@ public abstract class Character : ICharacter
             var freeHands = GetFreeHands(item);
             if (freeHands is null) return false;
 
-            IItem? lootItem = null;
-
             if (item is Valuable)
-                lootItem = DivideValuable(freeHands.Count, item);
+            {
+                List<IItem> handItems = new();
+                IItem? lootItem = null;
+                (handItems, lootItem) = DivideValuable(freeHands.Count, item);
+                AddToHands(freeHands, handItems);
+                if(lootItem is not null) 
+                    loot.Add(lootItem);
+            }
+            else
+            {
+                AddToHands(freeHands, item);
+            }
 
-            AddToHands(freeHands, item);
             loot.Remove(item);
-            if(lootItem is not null) 
-                loot.Add(lootItem);
 
             return true;
         }
@@ -70,19 +85,34 @@ public abstract class Character : ICharacter
         }
     }
 
-    private IItem? DivideValuable(int noFreeHands, IItem item)
+    private (List<IItem> HandItems, IItem? RemainingItem) 
+        DivideValuable(int noFreeHands, IItem item)
     {
-        if(noFreeHands >= item.NoOfHands) return null;
+        //if(noFreeHands >= item.NoOfHands) return null;
         
         var possibleToPickUp = (int)(noFreeHands / item.Size);
-        var remaining = ((Valuable)item).Quantity - possibleToPickUp;
+        var remaining = item.Quantity - possibleToPickUp;
 
-        ((Valuable)item).Quantity = possibleToPickUp;
+        //item.Quantity = possibleToPickUp;
+        var handItems = new List<IItem>();
+        var id = Backpack is null || Backpack.Count == 0 ? 1 : Backpack.Max(b => b.Id) + 1;
+        var qty = possibleToPickUp / noFreeHands;
+        for (int i = 0; i < noFreeHands; i++)
+        {
+            var newItem = new Valuable(
+                id, new Uri("https://getbootstrap.com/"), item.Name,
+                item.Size, qty, item.Durability);
 
-        var id = Backpack is null || Backpack.Count == 0 ? 1 : Backpack.Max(b => b.Id);
-        return new Valuable(
+            handItems.Add(newItem);
+        }
+
+        if (noFreeHands >= item.NoOfHands) return (handItems, null);
+
+        id = Backpack is null || Backpack.Count == 0 ? 1 : Backpack.Max(b => b.Id) + 100;
+        
+        return (handItems, new Valuable(
             id, new Uri("https://getbootstrap.com/"), item.Name,
-            item.Size, remaining, item.Durability);
+            item.Size, remaining, item.Durability));
     }
 
     public Weapon? FindBestWeapon()

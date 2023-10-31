@@ -3,18 +3,21 @@ using HeroPack.Classes;
 using HeroPack.Interfaces;
 using HeroPack.Classes.Valuables;
 using System.Threading;
+using HeroPack.Exceptions;
 
 namespace HeroPack.Services;
 
-/// TODO: 1. Testa Click button for attack
+/// TODO: 1. Monster slåss tillbaka
 /// TODO: 2. Action points för mana, health, byta vapen
-/// TODO: 3. Visa stats mellan attacker
 
 public class Game
 {
     public Character Hero { get; private set; } = new Hero("Balder", 2, 45, 35, 100);
     public List<Character> Monsters { get; private set; } = new()
-    { new Monster("Grog", 2, 10, 67, 35, 100) };
+    { 
+        new Monster("Grog", 2, 10, 67, 35, 100),
+        new Monster("Floof", 2, 10, 67, 35, 100)
+    };
     public string Message { get; set; } = string.Empty;
     public Backpack<IItem> HerosBackpack { get; private set; } = new(0);
     public Backpack<IItem> Loot { get; private set; } = new(0);
@@ -49,4 +52,21 @@ public class Game
         
     }
 
+    public async Task Attack()
+    {
+        try
+        {
+            Hero.Attack(Monsters);
+            await Task.Delay(1000);
+            foreach (var monster in Monsters)
+            {
+                monster.Attack(new List<Character>() { Hero });
+                await Task.Delay(1000);
+            }
+        }
+        catch (AttackException ex)
+        {
+            Message = ex.Message;
+        }
+    }
 }

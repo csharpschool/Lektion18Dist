@@ -15,5 +15,6 @@ public class Monster : Character
         Strength = strength;
         Stamina = stamina;
         Health = health;
+        Name = name;
     }
 }

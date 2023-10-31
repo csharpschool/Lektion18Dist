@@ -11,6 +11,7 @@ public abstract class Character : ICharacter
     public double Strength { get; set; }
     public double Stamina { get; set; }
     public double Health { get; set; }
+    public string Name { get; init; }
     protected List<Hand> Hands { get; init; } = new();
     protected Backpack<IItem>? Backpack { get; private set; }
 
@@ -147,12 +148,13 @@ public abstract class Character : ICharacter
         return backpack;
     }
 
-    public (double AttackerHealth, double AdversaryHealth, string Error)
-        Attack(List<Character> adversaries)
+    public void Attack(List<Character> adversaries)
     {
         try
         {
-            var adversaryMinHealth = adversaries.Min(m => m.Health);
+            var adversaryMinHealth = adversaries
+                .Where(a => a.Health > 0)
+                .Min(m => m.Health);
             var adversary = adversaries.First(m => m.Health == adversaryMinHealth);
             var bestWeapon = FindBestWeapon();
 
@@ -161,12 +163,11 @@ public abstract class Character : ICharacter
                 : bestWeapon.CalculateDamage(this);
 
             adversary.Health -= damage;
-
-            return (Health, adversary.Health, string.Empty);
+            if (adversary.Health < 0) adversary.Health = 0;
         }
         catch
         {
-            return(Health, 0, "No adversary to fight.");
+            throw new AttackException("No adversary to fight.");
         }
     }
 }

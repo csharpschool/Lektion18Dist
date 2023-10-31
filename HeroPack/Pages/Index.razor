@@ -5,15 +5,18 @@
 <PageTitle>Index</PageTitle>
 
 <button class="btn btn-warning"
-@onclick="() => 
-    { 
-        game.AttackValues = game.Hero.Attack(game.Monsters); 
-        game.Message = game.AttackValues.Error;
-    }">
+@onclick="async () => await game.Attack()">
     Attack
 </button>
 
 <h1>Game</h1>
+
+<div>@game.Hero.Name: @game.Hero.Health</div>
+@foreach (var monster in @game.Monsters)
+{
+    <div>@monster.Name: @monster.Health</div>
+}
+
 <h3>Backpack </h3>
 <table class="table">
     <thead>

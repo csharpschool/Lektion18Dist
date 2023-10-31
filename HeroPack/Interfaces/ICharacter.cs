@@ -12,5 +12,5 @@ public interface ICharacter
     Weapon? FindBestWeapon();
     Backpack<IItem>? Loot();
     void AddToBackpack(Backpack<IItem> loot, IItem item);
-    (double AttackerHealth, double AdversaryHealth, string Error) Attack(List<Character> adversaries);
+    void Attack(List<Character> adversaries);
 }

@@ -8,8 +8,6 @@ namespace HeroPack.Classes;
 
 public class Hero : Character
 {
-    public string Name { get; init; }
-
     public Hero(string name, int numberOfHands, double strength, double stamina, double health)
     {
         Name = name;

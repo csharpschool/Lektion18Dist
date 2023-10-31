@@ -9,6 +9,10 @@ using HeroPack.Classes.Consumables;
 namespace HeroPack.Services;
 
 /// TODO: 1. Action points för mana, health, byta vapen
+/// TODO: 2. Game Over meddelande
+/// TODO: 3. Action points för mana, health, byta vapen
+/// TODO: 4. Möta en boss
+/// TODO: 5. Shop
 
 public class Game
 {

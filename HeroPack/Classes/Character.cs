@@ -148,7 +148,7 @@ public abstract class Character : ICharacter
         return backpack;
     }
 
-    public void Attack(List<Character> adversaries)
+    public Attack Attack(List<Character> adversaries)
     {
         try
         {
@@ -164,6 +164,15 @@ public abstract class Character : ICharacter
 
             adversary.Health -= damage;
             if (adversary.Health < 0) adversary.Health = 0;
+
+            return new Attack()
+            {
+                AttackerName = Name,
+                AttackerHealth = Health,
+                AdversaryHealth = adversary.Health,
+                AdversaryName = adversary.Name,
+                Damage = damage
+            };
         }
         catch
         {

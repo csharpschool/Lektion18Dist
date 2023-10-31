@@ -18,6 +18,7 @@ public class Game
         new Monster("Grog", 2, 10, 67, 35, 100),
         new Monster("Floof", 2, 10, 67, 35, 100)
     };
+    public List<Attack> BattleLog { get; private set; } = new();
     public string Message { get; set; } = string.Empty;
     public Backpack<IItem> HerosBackpack { get; private set; } = new(0);
     public Backpack<IItem> Loot { get; private set; } = new(0);
@@ -39,7 +40,7 @@ public class Game
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
-            Hero.AddToBackpack(new Backpack<IItem>(0), sword);
+            Hero.PickUp(new Backpack<IItem>(0), sword);
 
             HerosBackpack = Hero.OpenBackpack() ?? new(0);
             Loot = Monsters[0].Loot() ?? new(0);
@@ -56,11 +57,14 @@ public class Game
     {
         try
         {
-            Hero.Attack(Monsters);
+            //Attack attack = Hero.Attack(Monsters);
+            BattleLog.Add(Hero.Attack(Monsters));
             await Task.Delay(1000);
             foreach (var monster in Monsters)
             {
-                monster.Attack(new List<Character>() { Hero });
+                if (monster.Health == 0) continue;
+                BattleLog.Add(monster.Attack(
+                    new List<Character>() { Hero }));
                 await Task.Delay(1000);
             }
         }

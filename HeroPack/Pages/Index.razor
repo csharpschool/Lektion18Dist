@@ -3,19 +3,40 @@
 @inject Game game
 
 <PageTitle>Index</PageTitle>
-
-<button class="btn btn-warning"
-@onclick="async () => await game.Attack()">
-    Attack
-</button>
+@if(game.Hero.Health > 0)
+{
+    <button class="btn btn-warning"
+    @onclick="async () => await game.Attack()">
+        Attack
+    </button>
+}
 
 <h1>Game</h1>
 
-<div>@game.Hero.Name: @game.Hero.Health</div>
-@foreach (var monster in @game.Monsters)
-{
-    <div>@monster.Name: @monster.Health</div>
-}
+<h3>Battle Log</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Attacker</th>
+            <th>Attacker Health</th>
+            <th>Damage</th>
+            <th>Adversary</th>
+            <th>Adversary Health</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in game.BattleLog)
+        {
+            <tr>
+                <td>@log.AttackerName</td>
+                <td>@log.AttackerHealth</td>
+                <td>@log.Damage</td>
+                <td>@log.AdversaryName</td>
+                <td>@log.AdversaryHealth</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <h3>Backpack </h3>
 <table class="table">

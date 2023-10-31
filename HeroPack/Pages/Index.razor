@@ -6,7 +6,7 @@
 @if(game.Hero.Health > 0)
 {
     <button class="btn btn-warning"
-    @onclick="async () => await game.Attack()">
+    @onclick="async () => await game.Action()">
         Attack
     </button>
 }
@@ -27,13 +27,25 @@
     <tbody>
         @foreach (var log in game.BattleLog)
         {
-            <tr>
-                <td>@log.AttackerName</td>
-                <td>@log.AttackerHealth</td>
-                <td>@log.Damage</td>
-                <td>@log.AdversaryName</td>
-                <td>@log.AdversaryHealth</td>
-            </tr>
+            if (log?.Message?.Length > 0)
+            {
+                <tr>
+                    <td>@log.AttackerName</td>
+                    <td>@Math.Round(log.AttackerHealth, 2)</td>
+                    <td colspan="3">@log.Message</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>@log.AttackerName</td>
+                    <td>@Math.Round(log.AttackerHealth, 2)</td>
+                    <td>@Math.Round(log.Damage, 2)</td>
+                    <td>@log.AdversaryName</td>
+                    <td>@Math.Round(log.AdversaryHealth, 2)</td>
+                    <td>@log.Message</td>
+                </tr>
+            }
         }
     </tbody>
 </table>

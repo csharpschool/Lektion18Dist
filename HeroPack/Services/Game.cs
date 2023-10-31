@@ -4,11 +4,11 @@ using HeroPack.Interfaces;
 using HeroPack.Classes.Valuables;
 using System.Threading;
 using HeroPack.Exceptions;
+using HeroPack.Classes.Consumables;
 
 namespace HeroPack.Services;
 
-/// TODO: 1. Monster slåss tillbaka
-/// TODO: 2. Action points för mana, health, byta vapen
+/// TODO: 1. Action points för mana, health, byta vapen
 
 public class Game
 {
@@ -30,6 +30,7 @@ public class Game
         {
             Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
             Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1);
+            HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5);
 
             // Add to monster's Backpack
             //int id, Uri image, string name, int quantity, double durability
@@ -37,13 +38,16 @@ public class Game
                     101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100));
             Monsters[0].AddToBackpack(new Backpack<IItem>(0), new Coin(
                     102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100));
+            Monsters[1].AddToBackpack(new Backpack<IItem>(0), new Coin(
+                    103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100));
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
-            Hero.PickUp(new Backpack<IItem>(0), sword);
+            Hero.AddToBackpack(new Backpack<IItem>(0), health);
+            //Hero.PickUp(new Backpack<IItem>(0), sword);
 
             HerosBackpack = Hero.OpenBackpack() ?? new(0);
-            Loot = Monsters[0].Loot() ?? new(0);
+            //Loot = Monsters[0].Loot() ?? new(0);
         }
         catch (Exception ex)
         {
@@ -53,24 +57,51 @@ public class Game
         
     }
 
-    public async Task Attack()
+    public async Task Action()
     {
         try
         {
-            //Attack attack = Hero.Attack(Monsters);
-            BattleLog.Add(Hero.Attack(Monsters));
-            await Task.Delay(1000);
+            // Hjältens runda
+            if (Hero.Health > 75) Attack(Hero, Monsters);
+            else
+            {
+                var (drank, message) = Hero.Drink(typeof(HealthPotion));
+                if(!drank) Attack(Hero, Monsters);
+                else BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
+            }
+
+            await Task.Delay(500);
             foreach (var monster in Monsters)
             {
-                if (monster.Health == 0) continue;
-                BattleLog.Add(monster.Attack(
-                    new List<Character>() { Hero }));
-                await Task.Delay(1000);
+                if (monster.Health == 0)
+                {
+                    Loot.AddRange(monster.Loot() ?? new(0));
+                    continue;
+                }
+
+                Attack(monster, new List<Character>() { Hero });
+                await Task.Delay(500);
             }
+            ///TODO: Ta bort döda monster
         }
         catch (AttackException ex)
         {
             Message = ex.Message;
         }
     }
+
+    public void Attack(Character attacker, List<Character> adversaries)
+    {
+        try
+        {
+            BattleLog.Add(attacker.Attack(
+                new List<Character>(adversaries)));
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+
 }

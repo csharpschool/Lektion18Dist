@@ -1,4 +1,5 @@
-﻿using HeroPack.Classes.Valuables;
+﻿using HeroPack.Classes.Consumables;
+using HeroPack.Classes.Valuables;
 using HeroPack.Classes.Weapons;
 using HeroPack.Exceptions;
 using HeroPack.Interfaces;
@@ -171,7 +172,7 @@ public abstract class Character : ICharacter
                 AttackerHealth = Health,
                 AdversaryHealth = adversary.Health,
                 AdversaryName = adversary.Name,
-                Damage = damage
+                Damage = damage                
             };
         }
         catch
@@ -179,4 +180,16 @@ public abstract class Character : ICharacter
             throw new AttackException("No adversary to fight.");
         }
     }
+
+    public (bool Drank, string Message) Drink(Type item)
+    {
+        var potion = Backpack?.FirstOrDefault(p => p.GetType() == item);
+
+        if (potion is null) return (false, "");
+
+        Health += ((HealthPotion)potion).Capacity;
+        Backpack?.Remove(potion);
+        return (true, $"Drank a {item.Name} potion");
+    }
+
 }

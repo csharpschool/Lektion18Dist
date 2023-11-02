@@ -11,7 +11,6 @@ namespace HeroPack.Services;
 /// TODO: 1. Action points för mana, health, byta vapen
 /// TODO: 2. Game Over meddelande
 /// TODO: 3. Möta en boss
-/// TODO: 4. Shop
 
 public class Game
 {

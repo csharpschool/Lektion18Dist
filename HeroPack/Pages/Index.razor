@@ -13,6 +13,14 @@
 
 <h1>Game</h1>
 
+@* Error message *@
+@if (game.Message.Length > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @game.Message
+    </div>
+}
+
 <h3>Shop</h3>
 <table class="table">
     <thead>
@@ -42,6 +50,36 @@
     </tbody>
 </table>
 
+<h3>Backpack </h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Hands</th>
+            <th>Durability</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in game.HerosBackpack)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Size</td>
+                <td>@item.NoOfHands</td>
+                <td>@item.Durability</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => game.Message = game.Hero.Sell(game.Shop, item)">Sell</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <h3>Battle Log</h3>
 <table class="table">
@@ -76,31 +114,6 @@
                     <td>@log.Message</td>
                 </tr>
             }
-        }
-    </tbody>
-</table>
-
-<h3>Backpack </h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Hands</th>
-            <th>Durability</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in game.HerosBackpack)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Size</td>
-                <td>@item.NoOfHands</td>
-                <td>@item.Durability</td>
-                <td>@item.Quantity</td>
-            </tr>
         }
     </tbody>
 </table>
@@ -165,12 +178,5 @@
     </table>
 }
 
-@* Error message *@
-@if(game.Message.Length > 0)
-{
-    <div class="alert alert-danger" role="alert">
-        @game.Message
-    </div>
-}
 
 

@@ -244,5 +244,37 @@ public abstract class Character : ICharacter
 
         return $"Purchased {item.Name}.";
     }
+
+    public string Sell(Shop<IItem> shop, IItem itemFromBackpack)
+    {
+        var priceModifier = new Random().NextDouble();
+        var coins = itemFromBackpack.Price - 
+            itemFromBackpack.Price * priceModifier;
+
+        if(coins < itemFromBackpack.Price * 0.5)
+        {
+            priceModifier = new Random().NextDouble();
+            coins = itemFromBackpack.Price -
+            itemFromBackpack.Price * priceModifier;
+        }
+
+        var gold = Backpack?.SingleOrDefault(
+            g => g.GetType() == typeof(Coin));
+
+        if (gold is null)
+        {
+            gold = new Coin(105, new Uri("https://getbootstrap.com/"), 
+                "Gold Coins", (int)Math.Ceiling(coins), 100, 1);
+            Backpack?.Add(gold);
+        }
+        else
+            gold.Quantity += (int)Math.Ceiling(coins);
+
+        Backpack?.Remove(itemFromBackpack);
+        shop.Add(itemFromBackpack);
+
+        return $"Sold {itemFromBackpack.Name} for {Math.Round(coins, 2)} gold.";
+    }
+
 }
 

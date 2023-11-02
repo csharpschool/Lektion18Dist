@@ -31,18 +31,20 @@ public class Game
     {
         try
         {
-            Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
-            Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1, 100);
-            HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5, 35);
+            Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75, 1);
+            Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1, 100, 0.25);
+            Sword scimitar = new(3, new Uri("https://getbootstrap.com/"), "Big Bob", 3, 1, 1, 1, 100, 0.25);
+            HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5, 35, 0.5);
 
             // Add to monster's Backpack
             //int id, Uri image, string name, int quantity, double durability
             Monsters[0].AddToBackpack(new Backpack<IItem>(0), new Ruby(
-                    101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100, 75));
+                    101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100, 75, 0.7));
             Monsters[0].AddToBackpack(new Backpack<IItem>(0), new Coin(
-                    102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100, 1));
+                    102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100, 1, 1));
             Monsters[1].AddToBackpack(new Backpack<IItem>(0), new Coin(
-                    103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100, 1));
+                    103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100, 1, 1));
+            Monsters[1].AddToBackpack(new Backpack<IItem>(0), scimitar);
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
@@ -51,7 +53,7 @@ public class Game
 
             // Add to Shop
             Shop.Add(new Ruby(101, new Uri("https://getbootstrap.com/"),
-                "Large Ruby", 3, 100, 105));
+                "Large Ruby", 3, 100, 105, 0.3));
 
             HerosBackpack = Hero.OpenBackpack() ?? new(0);
             //Loot = Monsters[0].Loot() ?? new(0);

@@ -11,6 +11,8 @@ public class Item : IItem
     public int NoOfHands { get; set; }
     public double Durability { get; set; }
     public int Quantity { get; set; }
+    public double DropProbability { get; init; }
+
     double price = 0;
     public double Price { 
         get { return price; } 
@@ -19,7 +21,7 @@ public class Item : IItem
 
 
     public Item(int id, Uri image, string name,
-        double size, int noOfHands, double durability, int quantity, double price) 
-        => (Id, Image, Name, Size, NoOfHands, Durability, Quantity, Price)
-        = (id, image, name, size, noOfHands, durability, quantity, price);
+        double size, int noOfHands, double durability, int quantity, double price, double dropProbability) 
+        => (Id, Image, Name, Size, NoOfHands, Durability, Quantity, Price, DropProbability)
+        = (id, image, name, size, noOfHands, durability, quantity, price, dropProbability);
 }

@@ -7,8 +7,8 @@ public class Weapon : Item, IDamage
     public double BaseDamage { get; }
 
     public Weapon(int id, Uri image, string name, double size, 
-        int noOfHands, double durability, double baseDamage, double price)
-        : base(id, image, name, size, noOfHands, durability, 1, price)
+        int noOfHands, double durability, double baseDamage, double price, double dropProbability)
+        : base(id, image, name, size, noOfHands, durability, 1, price, dropProbability)
     {
         BaseDamage = baseDamage;
     }

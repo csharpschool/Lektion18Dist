@@ -5,8 +5,8 @@ namespace HeroPack.Classes.Weapons;
 public class Sword : Weapon
 {
     public Sword(int id, Uri image, string name, 
-        int size, int noOfHands, double durability, double baseDamage, double price) : 
-        base(id, image, name, size, noOfHands, durability, baseDamage, price)
+        int size, int noOfHands, double durability, double baseDamage, double price, double dropProbability) : 
+        base(id, image, name, size, noOfHands, durability, baseDamage, price, dropProbability)
     {
     }
 

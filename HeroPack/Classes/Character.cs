@@ -4,6 +4,7 @@ using HeroPack.Classes.Weapons;
 using HeroPack.Exceptions;
 using HeroPack.Interfaces;
 using Microsoft.AspNetCore.Components.RenderTree;
+using System.Linq;
 using System.Reflection.Metadata;
 
 namespace HeroPack.Classes;
@@ -95,7 +96,7 @@ public abstract class Character : ICharacter
         {
             var newItem = new Valuable(
                 id, new Uri("https://getbootstrap.com/"), item.Name,
-                item.Size, qty, item.Durability, item.Price);
+                item.Size, qty, item.Durability, item.Price, item.DropProbability);
 
             handItems.Add(newItem);
         }
@@ -106,7 +107,7 @@ public abstract class Character : ICharacter
         
         return (handItems, new Valuable(
             id, new Uri("https://getbootstrap.com/"), item.Name,
-            item.Size, remaining, item.Durability, item.Price));
+            item.Size, remaining, item.Durability, item.Price, item.DropProbability));
     }
 
     public Weapon? FindBestWeapon()
@@ -175,9 +176,19 @@ public abstract class Character : ICharacter
 
     public Backpack<IItem>? Loot()
     {
-        var backpack = Backpack;
+        var random = new Random();
+                
+        var droppableItems = Backpack?.Where(
+            i => i.DropProbability > random.NextDouble());
+
+        var items = new Backpack<IItem>(
+            droppableItems is null ? 0: droppableItems.Count());
+
+        if(droppableItems is not null)
+            items.AddRange(droppableItems);
+
         Backpack = null;
-        return backpack;
+        return items;
     }
 
     public Attack Attack(List<Character> adversaries)
@@ -264,7 +275,7 @@ public abstract class Character : ICharacter
         if (gold is null)
         {
             gold = new Coin(105, new Uri("https://getbootstrap.com/"), 
-                "Gold Coins", (int)Math.Ceiling(coins), 100, 1);
+                "Gold Coins", (int)Math.Ceiling(coins), 100, 1, 1);
             Backpack?.Add(gold);
         }
         else

@@ -7,8 +7,8 @@ namespace HeroPack.Classes.Consumables
         public int Capacity { get; init; }
 
         public HealthPotion(int capacity, int id, Uri image, 
-            string name, double size, int noOfHands, double durability, double price)
-        : base(id, image, name, size, noOfHands, durability, 1, price) 
+            string name, double size, int noOfHands, double durability, double price, double dropProbability)
+        : base(id, image, name, size, noOfHands, durability, 1, price, dropProbability) 
             => Capacity = capacity;
             
     }

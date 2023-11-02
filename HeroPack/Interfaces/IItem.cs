@@ -9,6 +9,7 @@
         int NoOfHands { get; set; }
         double Durability { get; set; }
         int Quantity { get; set; }
+        double DropProbability { get; init; }
         double Price { get; set; }
     }
 }

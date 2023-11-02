@@ -13,6 +13,36 @@
 
 <h1>Game</h1>
 
+<h3>Shop</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Hands</th>
+            <th>Durability</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in game.Shop.Get(null))
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Size</td>
+                <td>@item.NoOfHands</td>
+                <td>@item.Durability</td>
+                <td>@item.Price</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => game.Message = game.Hero.Purchace(game.Shop, item)">Buy</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
 <h3>Battle Log</h3>
 <table class="table">
     <thead>
@@ -58,6 +88,7 @@
             <th>Size</th>
             <th>Hands</th>
             <th>Durability</th>
+            <th>Quantity</th>
         </tr>
     </thead>
     <tbody>
@@ -68,6 +99,7 @@
                 <td>@item.Size</td>
                 <td>@item.NoOfHands</td>
                 <td>@item.Durability</td>
+                <td>@item.Quantity</td>
             </tr>
         }
     </tbody>

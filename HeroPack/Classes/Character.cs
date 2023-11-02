@@ -3,6 +3,7 @@ using HeroPack.Classes.Valuables;
 using HeroPack.Classes.Weapons;
 using HeroPack.Exceptions;
 using HeroPack.Interfaces;
+using Microsoft.AspNetCore.Components.RenderTree;
 using System.Reflection.Metadata;
 
 namespace HeroPack.Classes;
@@ -94,7 +95,7 @@ public abstract class Character : ICharacter
         {
             var newItem = new Valuable(
                 id, new Uri("https://getbootstrap.com/"), item.Name,
-                item.Size, qty, item.Durability);
+                item.Size, qty, item.Durability, item.Price);
 
             handItems.Add(newItem);
         }
@@ -105,7 +106,7 @@ public abstract class Character : ICharacter
         
         return (handItems, new Valuable(
             id, new Uri("https://getbootstrap.com/"), item.Name,
-            item.Size, remaining, item.Durability));
+            item.Size, remaining, item.Durability, item.Price));
     }
 
     public Weapon? FindBestWeapon()
@@ -125,7 +126,7 @@ public abstract class Character : ICharacter
     public Backpack<IItem>? OpenBackpack() => Backpack;
     public List<Hand> GetItemsInHands() => Hands;
 
-    public void AddToBackpack(Backpack<IItem> loot, IItem item)
+    /*public void AddToBackpack(Backpack<IItem> loot, IItem item)
     {
         try
         {
@@ -140,7 +141,37 @@ public abstract class Character : ICharacter
         {
             throw new ItemException("Could not add to backpack.");
         }
+    }*/
+
+    public void AddToBackpack(Backpack<IItem> loot, IItem item)
+    {
+        try
+        {
+            if(item.GetType() == typeof(Coin))
+            {
+                var gold = Backpack?.SingleOrDefault(
+                    g => g.GetType() == typeof(Coin));
+
+                if (gold is null)
+                    Backpack?.Add(item);
+                else
+                    gold.Quantity += item.Quantity;
+            }
+            else
+                Backpack?.Add(item);
+
+            loot.Remove(item);
+        }
+        catch (ItemException)
+        {
+            throw;
+        }
+        catch
+        {
+            throw new ItemException("Could not add to backpack.");
+        }
     }
+
 
     public Backpack<IItem>? Loot()
     {
@@ -192,4 +223,26 @@ public abstract class Character : ICharacter
         return (true, $"Drank a {item.Name} potion");
     }
 
+    public string Purchace(Shop<IItem> shop, IItem item)
+    {
+        if (item.Size > Backpack?.FreeSpace)
+            return "Does not fit in the backpack.";
+
+        var gold = Backpack?.SingleOrDefault(
+            g => g.GetType() == typeof(Coin));
+
+        if (gold is null)
+            return "No gold.";
+
+        if (item.Price > gold.Quantity)
+            return "Not enough gold.";
+
+        gold.Quantity -= (int)Math.Ceiling(item.Price);
+
+        Backpack?.Add(item);
+        shop.Remove(item);
+
+        return $"Purchased {item.Name}.";
+    }
 }
+

@@ -10,9 +10,8 @@ namespace HeroPack.Services;
 
 /// TODO: 1. Action points för mana, health, byta vapen
 /// TODO: 2. Game Over meddelande
-/// TODO: 3. Action points för mana, health, byta vapen
-/// TODO: 4. Möta en boss
-/// TODO: 5. Shop
+/// TODO: 3. Möta en boss
+/// TODO: 4. Shop
 
 public class Game
 {
@@ -26,6 +25,7 @@ public class Game
     public string Message { get; set; } = string.Empty;
     public Backpack<IItem> HerosBackpack { get; private set; } = new(0);
     public Backpack<IItem> Loot { get; private set; } = new(0);
+    public Shop<IItem> Shop { get; private set; } = new();
     public (double AttackerHealth, double AdversaryHealth, string Error) AttackValues { get; set; }
 
     public Game()
@@ -33,22 +33,26 @@ public class Game
         try
         {
             Rock rock = new(1, new Uri("https://getbootstrap.com/"), "The Rock", 2, 1, 0.65, 0.75);
-            Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1);
-            HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5);
+            Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1, 100);
+            HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5, 35);
 
             // Add to monster's Backpack
             //int id, Uri image, string name, int quantity, double durability
             Monsters[0].AddToBackpack(new Backpack<IItem>(0), new Ruby(
-                    101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100));
+                    101, new Uri("https://getbootstrap.com/"), "Large Ruby", 3, 100, 75));
             Monsters[0].AddToBackpack(new Backpack<IItem>(0), new Coin(
-                    102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100));
+                    102, new Uri("https://getbootstrap.com/"), "Gold Coin", 100, 100, 1));
             Monsters[1].AddToBackpack(new Backpack<IItem>(0), new Coin(
-                    103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100));
+                    103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100, 1));
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
             Hero.AddToBackpack(new Backpack<IItem>(0), health);
-            //Hero.PickUp(new Backpack<IItem>(0), sword);
+            Hero.PickUp(new Backpack<IItem>(0), sword);
+
+            // Add to Shop
+            Shop.Add(new Ruby(101, new Uri("https://getbootstrap.com/"),
+                "Large Ruby", 3, 100, 105));
 
             HerosBackpack = Hero.OpenBackpack() ?? new(0);
             //Loot = Monsters[0].Loot() ?? new(0);

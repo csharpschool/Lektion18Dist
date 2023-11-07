@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using HeroPack.Enums;
 @using HeroPack.Services;
 @inject Game game
 
@@ -9,11 +10,26 @@
     @onclick="async () => await game.Action()">
         Attack
     </button>
+    @if(game.CurrentPlace?.Previous is not null)
+    {
+        <button class="btn btn-info"
+        @onclick="() => game.Move(Directions.Previous)">
+            Previous
+        </button>
+    }
+    @if (game.CurrentPlace?.Next is not null)
+    {
+        <button class="btn btn-info"
+        @onclick="() => game.Move(Directions.Next)">
+            Next
+        </button>
+    }
 }
 
 <h1>Game</h1>
+<h3>@game.CurrentPlace?.Name</h3>
 
-@* Error message *@
+@* Game message *@
 @if (game.Message.Length > 0)
 {
     <div class="alert alert-danger" role="alert">
@@ -21,35 +37,56 @@
     </div>
 }
 
-<h3>Shop</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Hands</th>
-            <th>Durability</th>
-            <th>Price</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in game.Shop.Get(null))
-        {
+@if (game.CurrentPlace is not null)
+{
+    <h3>Monsters</h3>
+    <table class="table">
+        <thead>
             <tr>
-                <td>@item.Name</td>
-                <td>@item.Size</td>
-                <td>@item.NoOfHands</td>
-                <td>@item.Durability</td>
-                <td>@item.Price</td>
-                <td>
-                    <button class="btn btn-primary" @onclick="() => game.Message = game.Hero.Purchace(game.Shop, item)">Buy</button>
-                </td>
+                <th>Adversary</th>
+                <th>Adversary Health</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var monster in game.CurrentPlace.Monsters)
+            {
+                <tr>
+                    <td>@monster.Name</td>
+                    <td>@Math.Round(monster.Health, 2)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
+    <h3>Shop</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Hands</th>
+                <th>Durability</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in game.CurrentPlace.Shop.Get(null))
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Size</td>
+                    <td>@item.NoOfHands</td>
+                    <td>@item.Durability</td>
+                    <td>@item.Price</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => game.Message = game.Hero.Purchace(game.Shop, item)">Buy</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 <h3>Backpack </h3>
 <table class="table">
     <thead>
@@ -81,43 +118,45 @@
     </tbody>
 </table>
 
-<h3>Battle Log</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Attacker</th>
-            <th>Attacker Health</th>
-            <th>Damage</th>
-            <th>Adversary</th>
-            <th>Adversary Health</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var log in game.BattleLog)
-        {
-            if (log?.Message?.Length > 0)
+@if (game.CurrentPlace is not null)
+{
+    <h3>Battle Log</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Attacker</th>
+                <th>Attacker Health</th>
+                <th>Damage</th>
+                <th>Adversary</th>
+                <th>Adversary Health</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in game.CurrentPlace.BattleLog)
             {
-                <tr>
-                    <td>@log.AttackerName</td>
-                    <td>@Math.Round(log.AttackerHealth, 2)</td>
-                    <td colspan="3">@log.Message</td>
-                </tr>
+                if (log?.Message?.Length > 0)
+                {
+                    <tr>
+                        <td>@log.AttackerName</td>
+                        <td>@Math.Round(log.AttackerHealth, 2)</td>
+                        <td colspan="3">@log.Message</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>@log.AttackerName</td>
+                        <td>@Math.Round(log.AttackerHealth, 2)</td>
+                        <td>@Math.Round(log.Damage, 2)</td>
+                        <td>@log.AdversaryName</td>
+                        <td>@Math.Round(log.AdversaryHealth, 2)</td>
+                        <td>@log.Message</td>
+                    </tr>
+                }
             }
-            else
-            {
-                <tr>
-                    <td>@log.AttackerName</td>
-                    <td>@Math.Round(log.AttackerHealth, 2)</td>
-                    <td>@Math.Round(log.Damage, 2)</td>
-                    <td>@log.AdversaryName</td>
-                    <td>@Math.Round(log.AdversaryHealth, 2)</td>
-                    <td>@log.Message</td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
+}
 <h3>Holding in hands</h3>
 @* Vad håller hjälten i händerna *@
 <table class="table">
@@ -144,7 +183,7 @@
     </tbody>
 </table>
 
-@if (game.Loot is not null && game.Loot.Count > 0)
+@if (game.CurrentPlace?.Loot is not null && game.CurrentPlace.Loot.Count > 0)
 {
     <h3>Loot on the ground</h3>
     <table class="table">
@@ -159,7 +198,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in game.Loot)
+            @foreach (var item in game.CurrentPlace.Loot)
             {
                 <tr>
                     <td>@item.Name</td>
@@ -168,9 +207,11 @@
                     <td>@item.Durability</td>
                     <td>@item.Quantity</td>
                     <td>
-                        <button class="btn btn-primary" @onclick="() => game.Hero.PickUp(game.Loot, item)">Pick Up</button>
-                        <button class="btn btn-primary" 
-                            @onclick="() => game.Hero.AddToBackpack(game.Loot, item)">Add to backpack</button>
+                        <button class="btn btn-primary" @onclick="() => game.Hero.PickUp(game.CurrentPlace.Loot, item)">Pick Up</button>
+                        <button class="btn btn-primary"
+                        @onclick="() => game.Hero.AddToBackpack(game.CurrentPlace.Loot, item)">
+                            Add to backpack
+                        </button>
                     </td>
                 </tr>
             }

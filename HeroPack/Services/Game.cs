@@ -18,6 +18,7 @@ public class Game
     public List<Place> Places { get; init; } = new();
     public Place? CurrentPlace { get; private set; } = null;
     public Character Hero { get; private set; } = new Hero("Balder", 2, 45, 35, 100);
+    public Character Boss { get; private set; } = new Monster("Skull Cracker", 2, 45, 200, 100, 300);
     public List<Character> Monsters { get; private set; } = new()
     { 
         new Monster("Grog", 2, 10, 67, 35, 100),
@@ -41,6 +42,7 @@ public class Game
             Sword sword = new(2, new Uri("https://getbootstrap.com/"), "Jack", 3, 1, 1, 1, 100, 0.25);
             Sword scimitar = new(3, new Uri("https://getbootstrap.com/"), "Big Bob", 3, 1, 1, 1, 100, 0.25);
             HealthPotion health = new(50, 1001, new Uri("https://getbootstrap.com/"), "Health Potion", 1, 1, 5, 35, 0.5);
+            HealthPotion largeHealth = new(500, 1003, new Uri("https://getbootstrap.com/"), "Large Health Potion", 1, 1, 5, 35, 0.5);
 
             // Add to monster's Backpack
             //int id, Uri image, string name, int quantity, double durability
@@ -60,17 +62,22 @@ public class Game
             // Add to Shop
             Shop.Add(new Ruby(101, new Uri("https://getbootstrap.com/"),
                 "Large Ruby", 3, 100, 105, 0.3));
+            Shop.Add(largeHealth);
 
             HerosBackpack = Hero.OpenBackpack() ?? new(0);
             //Loot = Monsters[0].Loot() ?? new(0);
 
             var place1 = new Place("City", Monsters, Shop);
             var place2 = new Place("Hamlet", Monsters, Shop);
+            var place3 = new Place("The Dungeon", Monsters, Shop, Boss);
             place1.AddNextPlace(place2);
             place2.AddPreviousPlace(place1);
+            place2.AddNextPlace(place3);
+            place3.AddPreviousPlace(place2);
 
             Places.Add(place1);
             Places.Add(place2);
+            Places.Add(place3);
             CurrentPlace = place1;
         }
         catch (Exception ex)
@@ -84,30 +91,33 @@ public class Game
         try
         {
             // Hjältens runda
-            if (Hero.Health > 75) Attack(Hero, Monsters);
+            if (Hero.Health > 75) Attack(Hero, CurrentPlace?.Monsters);
             else
             {
                 var (drank, message) = Hero.Drink(typeof(HealthPotion));
-                if(!drank) Attack(Hero, Monsters);
-                else CurrentPlace.BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
+                if(!drank) Attack(Hero, CurrentPlace?.Monsters);
+                else CurrentPlace?.BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
             }
 
             await Task.Delay(500);
-            foreach (var monster in Monsters)
+            if (CurrentPlace is not null && CurrentPlace?.Monsters is not null)
             {
-                if (monster.Health == 0)
+                foreach (var monster in CurrentPlace.Monsters)
                 {
-                    CurrentPlace.Loot.AddRange(monster.Loot() ?? new(0));
-                    continue;
-                }
+                    if (monster.Health == 0)
+                    {
+                        CurrentPlace?.Loot.AddRange(monster.Loot() ?? new(0));
+                        continue;
+                    }
 
-                Attack(monster, new List<Character>() { Hero });
-                if(Hero.Health <= 0)
-                {
-                    Message = "You died!";
-                    return;
+                    Attack(monster, new List<Character>() { Hero });
+                    if (Hero.Health <= 0)
+                    {
+                        Message = "You died!";
+                        return;
+                    }
+                    await Task.Delay(500);
                 }
-                await Task.Delay(500);
             }
             ///TODO: Ta bort döda monster
         }
@@ -117,12 +127,13 @@ public class Game
         }
     }
 
-    public void Attack(Character attacker, List<Character> adversaries)
+    public void Attack(Character attacker, List<Character>? adversaries)
     {
         try
         {
-            CurrentPlace.BattleLog.Add(attacker.Attack(
-                new List<Character>(adversaries)));
+            if(adversaries is not null)
+                CurrentPlace?.BattleLog.Add(attacker.Attack(
+                    new List<Character>(adversaries)));
         }
         catch
         {

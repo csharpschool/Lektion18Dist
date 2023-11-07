@@ -12,14 +12,14 @@ public class Place
     public Place? Next { get; private set; } = null;
     public Place? Previous { get; private set; } = null;
 
-    public Place(string name, List<Character> monsters, Shop<IItem> shop)
+    public Place(string name, List<Character> monsters, Shop<IItem> shop, Character? boss = null)
         => (Name, Monsters, Shop) 
-        = (name, AddMonsters(monsters), shop);
+        = (name, AddMonsters(monsters, boss), shop);
 
     public void AddNextPlace(Place next) => Next = next;
     public void AddPreviousPlace(Place previous) => Previous = previous;
 
-    List<Character> AddMonsters(List<Character> monsters)
+    List<Character> AddMonsters(List<Character> monsters, Character? boss)
     {
         var random = new Random();
         var numberOfMonsters = random.Next(monsters.Count);
@@ -33,12 +33,15 @@ public class Place
         }
 
         var adversaries = new List<Character>();
-        indicies.Reverse();
+        indicies.OrderBy(i => i);
         foreach (var index in indicies)
         {
             adversaries.Add(monsters[index]);
             monsters.RemoveAt(index);
         }
+
+        if(boss is not null)
+            adversaries.Add(boss);
 
         return adversaries;
     }

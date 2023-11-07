@@ -11,7 +11,9 @@ using HeroPack.Enums;
 namespace HeroPack.Services;
 
 /// TODO: 1. Action points för mana, health, byta vapen
-/// TODO: 2. Möta en boss
+/// TODO: 2. Progress bar för hälsa odyl.
+/// TODO: 3. Använda Stamina
+/// TODO: 4. Kunna anv. Magi och Mana
 
 public class Game
 {

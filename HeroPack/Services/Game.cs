@@ -7,6 +7,8 @@ using HeroPack.Exceptions;
 using HeroPack.Classes.Consumables;
 using System.Numerics;
 using HeroPack.Enums;
+using System.Reflection.Emit;
+using System.Linq;
 
 namespace HeroPack.Services;
 
@@ -54,11 +56,13 @@ public class Game
             Monsters[1].AddToBackpack(new Backpack<IItem>(0), new Coin(
                     103, new Uri("https://getbootstrap.com/"), "Gold Coin", 10, 100, 1, 1));
             Monsters[1].PickUp(new Backpack<IItem>(0), scimitar);
+            Boss.Spellbook.Add(new Spell("Crack and boom", 50, 15, 22.45));
+            Boss.Spellbook.Add(new Spell("Zoom and boom", 75, 15, 80.55));
 
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
             Hero.AddToBackpack(new Backpack<IItem>(0), health);
-            Hero.Spellbook.Add(new Spell("Fizzle and Pop", 75, 15, 0.45));
+            Hero.Spellbook.Add(new Spell("Fizzle and Pop", 75, 15, 20.45));
             //Hero.PickUp(new Backpack<IItem>(0), sword);
 
             // Add to Shop
@@ -88,18 +92,25 @@ public class Game
         }
     }
 
+    private bool DrinkHealthPotion(int level)
+    {
+        if (Hero.Health <= level)
+        { 
+            var (drank, message) = Hero.Drink(typeof(HealthPotion));
+            if (!drank) Attack(Hero, CurrentPlace?.Monsters, null);
+            else CurrentPlace?.BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
+        }
+
+        return Hero.Health <= level;
+    }
+
     public async Task Action()
     {
         try
         {
             // Hjältens runda
-            if (Hero.Health > 75) Attack(Hero, CurrentPlace?.Monsters, null);
-            else
-            {
-                var (drank, message) = Hero.Drink(typeof(HealthPotion));
-                if(!drank) Attack(Hero, CurrentPlace?.Monsters, null);
-                else CurrentPlace?.BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
-            }
+            var drank = DrinkHealthPotion(25);
+            if (!drank) Attack(Hero, CurrentPlace?.Monsters, null);
 
             await Task.Delay(500);
             if (CurrentPlace is not null && CurrentPlace?.Monsters is not null)
@@ -131,7 +142,59 @@ public class Game
 
     public async Task Action(Spell spell)
     {
-        Attack(Hero, CurrentPlace?.Monsters, spell);
+        try
+        {
+            // Hjältens runda
+            var drank = DrinkHealthPotion(25);
+            if (!drank) Attack(Hero, CurrentPlace?.Monsters, spell);
+            await Task.Delay(500);
+
+            if (CurrentPlace is not null && CurrentPlace?.Monsters is not null)
+            {
+                foreach (var monster in CurrentPlace.Monsters)
+                {
+                    if (monster.Health == 0)
+                    {
+                        CurrentPlace?.Loot.AddRange(monster.Loot() ?? new(0));
+                        continue;
+                    }
+
+                    if (monster.Spellbook.Count > 0)
+                    {
+                        var spells = monster.Spellbook
+                            .Where(s => s.ManaCost <= monster.Mana);
+                        if(spells.Any()) 
+                        {
+                            var maxDamage = spells.Max(
+                                s => s.MaxDamage);
+                            var monsterSpell = monster.Spellbook.FirstOrDefault(
+                                s => s.MaxDamage == maxDamage);
+                            if(monsterSpell is not null && 
+                                monsterSpell.ManaCost <= monster.Mana)
+                                monster.MagicalAttack(
+                                    new List<Character>() { Hero }, monsterSpell);
+                            else
+                                monster.Attack(new List<Character>() { Hero });
+                        }
+                        else
+                            monster.Attack(new List<Character>() { Hero });
+                    }
+                    else
+                        monster.Attack(new List<Character>() { Hero });
+
+                    if (Hero.Health <= 0)
+                    {
+                        Message = "You died!";
+                        return;
+                    }
+                    await Task.Delay(500);
+                }
+            }
+        }
+        catch (AttackException ex)
+        {
+            Message = ex.Message;
+        }
     }
 
     public void Attack(Character attacker, List<Character>? 
@@ -139,13 +202,15 @@ public class Game
     {
         try
         {
-            if(adversaries is not null)
-                if(spell is null) 
+            if (adversaries is not null)
+            {
+                if (spell is null)
                     CurrentPlace?.BattleLog.Add(attacker.Attack(
                         new List<Character>(adversaries)));
                 else
                     CurrentPlace?.BattleLog.Add(attacker.MagicalAttack(
                         new List<Character>(adversaries), spell));
+            }
         }
         catch
         {

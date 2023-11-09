@@ -81,7 +81,12 @@
             <tr>
                 <td>@spell.Name</td>
                 <td>@spell.ManaCost</td>
-                <td><button class="btn btn-primary" @onclick="() => game.Action(spell)">Cast Spell</button></td>
+                <td>
+                    @if (spell.ManaCost <= game.Hero.Mana)
+                    {
+                        <button class="btn btn-primary" @onclick="async () => await game.Action(spell)">Cast Spell</button>
+                    }
+                </td>
             </tr>
         }
     </tbody>
@@ -195,6 +200,7 @@
                 <th>Damage</th>
                 <th>Adversary</th>
                 <th>Adversary Health</th>
+                <th>Type</th>
             </tr>
         </thead>
         <tbody>
@@ -206,6 +212,7 @@
                         <td>@log.AttackerName</td>
                         <td>@Math.Round(log.AttackerHealth, 2)</td>
                         <td colspan="3">@log.Message</td>
+                        <td>@log.Type</td>
                     </tr>
                 }
                 else
@@ -216,6 +223,7 @@
                         <td>@Math.Round(log.Damage, 2)</td>
                         <td>@log.AdversaryName</td>
                         <td>@Math.Round(log.AdversaryHealth, 2)</td>
+                        <td>@log.Type</td>
                         <td>@log.Message</td>
                     </tr>
                 }

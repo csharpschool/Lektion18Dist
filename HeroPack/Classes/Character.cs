@@ -289,16 +289,17 @@ public abstract class Character : ICharacter
         return $"Sold {itemFromBackpack.Name} for {Math.Round(coins, 2)} gold.";
     }
 
-    internal Attack MagicalAttack(List<Character> adversaries, 
+    public Attack MagicalAttack(List<Character> adversaries, 
         Spell spell)
     {
         try
         {
-            var adversaryMaxHealth = adversaries
+            var adversaryMinHealth = adversaries
                 .Where(a => a.Health > 0)
-                .Max(m => m.Health);
+                .Min(m => m.Health);
+
             var adversary = adversaries.First(
-                m => m.Health == adversaryMaxHealth);
+                m => m.Health == adversaryMinHealth);
 
             var damage = (double)new Random()
                 .Next(spell.MinDamage, spell.MaxDamage);
@@ -306,13 +307,17 @@ public abstract class Character : ICharacter
             adversary.Health -= damage;
             if (adversary.Health < 0) adversary.Health = 0;
 
+            Mana -= spell.ManaCost;
+            if(Mana < 0) Mana = 0;
+
             return new Attack()
             {
                 AttackerName = Name,
                 AttackerHealth = Health,
                 AdversaryHealth = adversary.Health,
                 AdversaryName = adversary.Name,
-                Damage = damage
+                Damage = damage,
+                Type = Enums.AttackType.Magical
             };
         }
         catch

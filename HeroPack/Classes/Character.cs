@@ -16,6 +16,7 @@ public abstract class Character : ICharacter
     public double Health { get; set; }
     public string Name { get; init; }
     public double Mana { get; set; }
+    public List<Spell> Spellbook { get; set; } = new();
     protected List<Hand> Hands { get; init; } = new();
     protected Backpack<IItem>? Backpack { get; private set; }
 
@@ -288,5 +289,36 @@ public abstract class Character : ICharacter
         return $"Sold {itemFromBackpack.Name} for {Math.Round(coins, 2)} gold.";
     }
 
+    internal Attack MagicalAttack(List<Character> adversaries, 
+        Spell spell)
+    {
+        try
+        {
+            var adversaryMaxHealth = adversaries
+                .Where(a => a.Health > 0)
+                .Max(m => m.Health);
+            var adversary = adversaries.First(
+                m => m.Health == adversaryMaxHealth);
+
+            var damage = (double)new Random()
+                .Next(spell.MinDamage, spell.MaxDamage);
+
+            adversary.Health -= damage;
+            if (adversary.Health < 0) adversary.Health = 0;
+
+            return new Attack()
+            {
+                AttackerName = Name,
+                AttackerHealth = Health,
+                AdversaryHealth = adversary.Health,
+                AdversaryName = adversary.Name,
+                Damage = damage
+            };
+        }
+        catch
+        {
+            throw new AttackException("No adversary to fight.");
+        }
+    }
 }
 

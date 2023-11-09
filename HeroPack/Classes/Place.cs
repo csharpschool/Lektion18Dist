@@ -35,17 +35,25 @@ public class Place
                     indicies.Add(index);
             }
 
-            indicies.OrderBy(i => i).ToList();
+            /*indicies.OrderBy(i => i).ToList();
             foreach (var index in indicies)
             {
                 adversaries.Add(monsters[index]);
                 monsters.RemoveAt(index);
+            }*/
+
+            while(indicies.Count > 0)
+            {
+                var idx = indicies.Max();
+                adversaries.Add(monsters[idx]);
+                monsters.RemoveAt(idx);
+                indicies.Remove(idx);
             }
 
             if(boss is not null)
                 adversaries.Add(boss);
         }
-        catch (Exception ex)
+        catch
         {
             throw;
         }

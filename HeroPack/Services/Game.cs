@@ -58,6 +58,7 @@ public class Game
             // Add to Hero's Backpack
             Hero.AddToBackpack(new Backpack<IItem>(0), rock);
             Hero.AddToBackpack(new Backpack<IItem>(0), health);
+            Hero.Spellbook.Add(new Spell("Fizzle and Pop", 75, 15, 0.45));
             //Hero.PickUp(new Backpack<IItem>(0), sword);
 
             // Add to Shop
@@ -92,11 +93,11 @@ public class Game
         try
         {
             // Hjältens runda
-            if (Hero.Health > 75) Attack(Hero, CurrentPlace?.Monsters);
+            if (Hero.Health > 75) Attack(Hero, CurrentPlace?.Monsters, null);
             else
             {
                 var (drank, message) = Hero.Drink(typeof(HealthPotion));
-                if(!drank) Attack(Hero, CurrentPlace?.Monsters);
+                if(!drank) Attack(Hero, CurrentPlace?.Monsters, null);
                 else CurrentPlace?.BattleLog.Add(new Attack(message, Hero.Name, Hero.Health));
             }
 
@@ -111,7 +112,7 @@ public class Game
                         continue;
                     }
 
-                    Attack(monster, new List<Character>() { Hero });
+                    Attack(monster, new List<Character>() { Hero }, null);
                     if (Hero.Health <= 0)
                     {
                         Message = "You died!";
@@ -128,13 +129,23 @@ public class Game
         }
     }
 
-    public void Attack(Character attacker, List<Character>? adversaries)
+    public async Task Action(Spell spell)
+    {
+        Attack(Hero, CurrentPlace?.Monsters, spell);
+    }
+
+    public void Attack(Character attacker, List<Character>? 
+    adversaries, Spell? spell)
     {
         try
         {
             if(adversaries is not null)
-                CurrentPlace?.BattleLog.Add(attacker.Attack(
-                    new List<Character>(adversaries)));
+                if(spell is null) 
+                    CurrentPlace?.BattleLog.Add(attacker.Attack(
+                        new List<Character>(adversaries)));
+                else
+                    CurrentPlace?.BattleLog.Add(attacker.MagicalAttack(
+                        new List<Character>(adversaries), spell));
         }
         catch
         {

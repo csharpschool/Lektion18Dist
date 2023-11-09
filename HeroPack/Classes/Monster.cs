@@ -6,7 +6,7 @@ namespace HeroPack.Classes;
 
 public class Monster : Character
 {
-    public Monster(string name, int numberOfHands, int backpackSize, double strength, double stamina, double health)
+    public Monster(string name, int numberOfHands, int backpackSize, double strength, double stamina, double health, double mana = 0)
     {
         Hands = new(numberOfHands);
         CreateBackpack(backpackSize);
@@ -16,5 +16,6 @@ public class Monster : Character
         Stamina = stamina;
         Health = health;
         Name = name;
+        Mana = mana;
     }
 }

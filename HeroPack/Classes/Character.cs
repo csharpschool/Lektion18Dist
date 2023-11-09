@@ -15,6 +15,7 @@ public abstract class Character : ICharacter
     public double Stamina { get; set; }
     public double Health { get; set; }
     public string Name { get; init; }
+    public double Mana { get; set; }
     protected List<Hand> Hands { get; init; } = new();
     protected Backpack<IItem>? Backpack { get; private set; }
 

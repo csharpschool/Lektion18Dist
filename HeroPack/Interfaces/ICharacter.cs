@@ -8,6 +8,7 @@ public interface ICharacter
     double Strength { get; }
     double Stamina { get; }
     double Health { get; }
+    double Mana { get; }
     bool PickUp(Backpack<IItem> loot, IItem item);
     Weapon? FindBestWeapon();
     Backpack<IItem>? Loot();

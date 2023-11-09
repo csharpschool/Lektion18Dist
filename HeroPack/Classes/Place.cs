@@ -21,28 +21,39 @@ public class Place
 
     List<Character> AddMonsters(List<Character> monsters, Character? boss)
     {
-        var random = new Random();
-        var numberOfMonsters = random.Next(monsters.Count);
-        var indicies = new List<int>();
-
-        while(indicies.Count < numberOfMonsters)
-        {
-            var index = random.Next(monsters.Count);
-            if(!indicies.Contains(index))
-                indicies.Add(index);
-        }
-
         var adversaries = new List<Character>();
-        indicies.OrderBy(i => i);
-        foreach (var index in indicies)
+        try
         {
-            adversaries.Add(monsters[index]);
-            monsters.RemoveAt(index);
-        }
+            var random = new Random();
+            var numberOfMonsters = random.Next(monsters.Count);
+            var indicies = new List<int>();
 
-        if(boss is not null)
-            adversaries.Add(boss);
+            while(indicies.Count < numberOfMonsters)
+            {
+                var index = random.Next(monsters.Count);
+                if(!indicies.Contains(index))
+                    indicies.Add(index);
+            }
+
+            indicies.OrderBy(i => i).ToList();
+            foreach (var index in indicies)
+            {
+                adversaries.Add(monsters[index]);
+                monsters.RemoveAt(index);
+            }
+
+            if(boss is not null)
+                adversaries.Add(boss);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
 
         return adversaries;
     }
 }
+
+/*
+ * '   at System.Collections.Generic.List`1[[HeroPack.Classes.Character, HeroPack, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].get_Item(Int32 index)\n   at HeroPack.Classes.Place.AddMonsters(List`1 monsters, Character boss) in C:\\Users\\ceshe\\source\\repos\\Lektion18Dist\\HeroPack\\Classes\\Place.cs:line 41'
+ */

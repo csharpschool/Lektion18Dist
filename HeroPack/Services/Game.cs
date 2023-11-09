@@ -11,7 +11,6 @@ using HeroPack.Enums;
 namespace HeroPack.Services;
 
 /// TODO: 1. Action points för mana, health, byta vapen
-/// TODO: 2. Progress bar för hälsa odyl.
 /// TODO: 3. Använda Stamina
 /// TODO: 4. Kunna anv. Magi och Mana
 
@@ -19,12 +18,12 @@ public class Game
 {
     public List<Place> Places { get; init; } = new();
     public Place? CurrentPlace { get; private set; } = null;
-    public Character Hero { get; private set; } = new Hero("Balder", 2, 45, 35, 100);
-    public Character Boss { get; private set; } = new Monster("Skull Cracker", 2, 45, 200, 100, 300);
+    public Character Hero { get; private set; } = new Hero("Balder", 2, 45, 35, 100, 75);
+    public Character Boss { get; private set; } = new Monster("Skull Cracker", 2, 45, 200, 100, 300, 100);
     public List<Character> Monsters { get; private set; } = new()
     { 
-        new Monster("Grog", 2, 10, 67, 35, 100),
-        new Monster("Floof", 2, 10, 67, 35, 100),
+        new Monster("Grog", 2, 10, 67, 35, 100, 12),
+        new Monster("Floof", 2, 10, 67, 35, 100, 34),
         new Monster("Toof", 2, 10, 67, 35, 100),
         new Monster("Kaloof", 2, 10, 67, 35, 100)
 

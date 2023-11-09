@@ -8,7 +8,8 @@ namespace HeroPack.Classes;
 
 public class Hero : Character
 {
-    public Hero(string name, int numberOfHands, double strength, double stamina, double health)
+    public Hero(string name, int numberOfHands, double strength, 
+        double stamina, double health, double mana)
     {
         Name = name;
         Hands = new(numberOfHands);
@@ -18,5 +19,6 @@ public class Hero : Character
         Strength = strength;
         Stamina = stamina;
         Health = health;
+        Mana = mana;
     }
 }

@@ -37,14 +37,48 @@
     </div>
 }
 
-@if (game.CurrentPlace is not null)
+<h3>Hero</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Health</th>
+            <th>Mana</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@game.Hero.Name</td>
+            <td>
+                <div class="progress" role="progressbar" aria-label="Success example"
+                     aria-valuenow="@Math.Round(game.Hero.Health, 2)" aria-valuemin="0"
+                        aria-valuemax="100">
+                    <div class="progress-bar bg-success" style="width: @Math.Round(game.Hero.Health, 2)%">@Math.Round(game.Hero.Health, 2)%</div>
+                </div>
+            </td>
+            <td>
+                <div class="progress" role="progressbar" aria-label="Success example"
+                     aria-valuenow="@Math.Round(game.Hero.Mana, 2)" aria-valuemin="0"
+                     aria-valuemax="100">
+                    <div class="progress-bar bg-info" style="width: @Math.Round(game.Hero.Mana, 2)%">@Math.Round(game.Hero.Mana, 2)%</div>
+                </div>
+            </td>
+
+        </tr>
+    </tbody>
+</table>
+
+
+@if (game.CurrentPlace is not null && 
+     game.CurrentPlace.Monsters is not null)
 {
     <h3>Monsters</h3>
     <table class="table">
         <thead>
             <tr>
                 <th>Adversary</th>
-                <th>Adversary Health</th>
+                <th>Health</th>
+                <th>Mana</th>
             </tr>
         </thead>
         <tbody>
@@ -52,7 +86,20 @@
             {
                 <tr>
                     <td>@monster.Name</td>
-                    <td>@Math.Round(monster.Health, 2)</td>
+                    <td>
+                        <div class="progress" role="progressbar" aria-label="Success example"
+                             aria-valuenow="@Math.Round(monster.Health, 2)" aria-valuemin="0"
+                             aria-valuemax="100">
+                            <div class="progress-bar bg-success" style="width: @Math.Round(monster.Health, 2)%">@Math.Round(monster.Health, 2)%</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="progress" role="progressbar" aria-label="Success example"
+                             aria-valuenow="@Math.Round(game.Hero.Mana, 2)" aria-valuemin="0"
+                             aria-valuemax="100">
+                            <div class="progress-bar bg-info" style="width: @Math.Round(game.Hero.Mana, 2)%">@Math.Round(game.Hero.Mana, 2)%</div>
+                        </div>
+                    </td>
                 </tr>
             }
         </tbody>
